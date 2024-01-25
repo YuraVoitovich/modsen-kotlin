@@ -1,4 +1,3 @@
 package exception
 
-class ExchangePairIsNotPresentException(message: String?) : RuntimeException(message) {
-}
+class ExchangePairIsNotPresentException(message: String?) : RuntimeException(message)

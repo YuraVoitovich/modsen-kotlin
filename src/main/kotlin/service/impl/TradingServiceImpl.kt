@@ -20,12 +20,12 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
 
     companion object {
         val ALLOWED_TRADE_STATUSES = setOf(UserStatus.APPROVED)
-        val ZERO_BALANCE_MESSAGE = "Not enough currency: %s on the balance. Your balance: 0, needed: %s"
-        val NOT_ENOUGH_CURRENCY_EXCEPTION_MESSAGE = "Not enough currency: %s on the balance. Your balance: %s, needed: %s"
-        val INCORRECT_PASSPHRASE_EXCEPTION_MESSAGE = "Passphrase is incorrect"
-        val TRADING_IS_NOT_ALLOWED_EXCEPTION_MESSAGE = "Trading for user with id %s is not allowed"
-        val EXCHANGE_PAIR_IS_NOT_PRESENT = "Exchange pair %s to %s is not present"
-        val TRANSACTION_FAILED_MESSAGE = "Transaction failed"
+        const val ZERO_BALANCE_MESSAGE = "Not enough currency: %s on the balance. Your balance: 0, needed: %s"
+        const val NOT_ENOUGH_CURRENCY_EXCEPTION_MESSAGE = "Not enough currency: %s on the balance. Your balance: %s, needed: %s"
+        const val INCORRECT_PASSPHRASE_EXCEPTION_MESSAGE = "Passphrase is incorrect"
+        const val TRADING_IS_NOT_ALLOWED_EXCEPTION_MESSAGE = "Trading for user with id %s is not allowed"
+        const val EXCHANGE_PAIR_IS_NOT_PRESENT = "Exchange pair %s to %s is not present"
+        const val TRANSACTION_FAILED_MESSAGE = "Transaction failed"
     }
 
     val exchanges = mutableSetOf<Exchange>()
@@ -33,9 +33,7 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
         this.exchanges.add(exchange)
     }
 
-    override fun getAllExchanges(): Set<Exchange> {
-        return exchanges
-    }
+    override fun getAllExchanges(): Set<Exchange> = exchanges
 
     override fun swap(
         wallet: Wallet,
@@ -47,13 +45,13 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
     ) : Transaction {
 
         val exchangeRate = exchange.exchangeRates.getValueOrThrow(fromCurrency to toCurrency) {
-            ExchangePairIsNotPresentException(String
-                .format(EXCHANGE_PAIR_IS_NOT_PRESENT, fromCurrency, toCurrency))
+            ExchangePairIsNotPresentException(EXCHANGE_PAIR_IS_NOT_PRESENT
+                .format(fromCurrency, toCurrency))
         }
 
         val rand = random.nextInt(0, 51)
-        if (rand > 26 && rand < 51) {
-            throw TransactionFailed(TRANSACTION_FAILED_MESSAGE)
+        if (rand in 27..50) {
+            throw TransactionFailedException(TRANSACTION_FAILED_MESSAGE)
         }
 
         checkWalletPassphrase(wallet, passphrase)
@@ -80,8 +78,8 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
             .setScale(5, RoundingMode.HALF_UP)
 
         exchange.transactionHistory.add(transaction)
-        return transaction
 
+        return transaction
     }
 
     override fun trade(
@@ -127,26 +125,25 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
 
 
     private fun checkWalletPassphrase(wallet: Wallet, passphrase: String) {
-        if ((wallet.passphrase != passphrase)) {
+        if ((wallet.passphrase != passphrase))
             throw IncorrectPassphraseException(INCORRECT_PASSPHRASE_EXCEPTION_MESSAGE)
-        }
     }
 
     private fun checkTradingForUserIsAllowed(user: User) {
-        if (ALLOWED_TRADE_STATUSES.contains(user.status).not()) {
-            throw TradingIsNotAllowedException(String
-                .format(TRADING_IS_NOT_ALLOWED_EXCEPTION_MESSAGE, user.id))
+        if (!ALLOWED_TRADE_STATUSES.contains(user.status)) {
+            throw TradingIsNotAllowedException(TRADING_IS_NOT_ALLOWED_EXCEPTION_MESSAGE
+                .format(user.id))
         }
     }
 
     private fun checkUserCurrencyAmount(wallet: Wallet, currency: CryptoCurrency, amount: BigDecimal) {
         val balanceCurrencyAmount = wallet.cryptoCurrencies
             .getValueOrThrow(currency) {
-                NotEnoughCurrencyOnTheBalanceException(String
-                    .format(ZERO_BALANCE_MESSAGE, currency, amount) ) }
+                NotEnoughCurrencyOnTheBalanceException(ZERO_BALANCE_MESSAGE
+                    .format(currency, amount) ) }
         if (balanceCurrencyAmount < amount) {
-            throw NotEnoughCurrencyOnTheBalanceException(String
-                .format(NOT_ENOUGH_CURRENCY_EXCEPTION_MESSAGE, currency, balanceCurrencyAmount, amount))
+            throw NotEnoughCurrencyOnTheBalanceException(NOT_ENOUGH_CURRENCY_EXCEPTION_MESSAGE
+                .format(currency, balanceCurrencyAmount, amount))
         }
     }
 

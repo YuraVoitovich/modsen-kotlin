@@ -1,4 +1,3 @@
 package exception
 
-class TradingIsNotAllowedException(message: String?) : RuntimeException(message) {
-}
+class TradingIsNotAllowedException(message: String?) : RuntimeException(message)

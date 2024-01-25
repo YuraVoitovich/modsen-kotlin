@@ -29,8 +29,8 @@ class PersonalAccountManagementServiceImpl : PersonalAccountManagementService {
         endDate: LocalDateTime
     ) : List<Transaction> {
         return exchange.transactionHistory
-            .filter { transaction -> transaction.initiator.user.id == user.id }
-            .filter { transaction -> transaction.date.isInRange(startDate, endDate) }
+            .filter { transaction -> transaction.initiator.user.id == user.id
+                    && transaction.date.isInRange(startDate, endDate)}
     }
 }
 

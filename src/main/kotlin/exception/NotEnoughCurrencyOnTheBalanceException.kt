@@ -1,4 +1,3 @@
 package exception
 
-class NotEnoughCurrencyOnTheBalanceException(message: String?) : RuntimeException(message) {
-}
+class NotEnoughCurrencyOnTheBalanceException(message: String?) : RuntimeException(message)
