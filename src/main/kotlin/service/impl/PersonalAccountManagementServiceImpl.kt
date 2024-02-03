@@ -7,7 +7,7 @@ import user.User
 import wallet.Wallet
 import java.time.LocalDateTime
 
-class PersonalAccountManagementServiceImpl : PersonalAccountManagementService {
+object PersonalAccountManagementServiceImpl : PersonalAccountManagementService {
     override fun addNewWallet(user: User, wallet: Wallet) {
         user.wallets.add(wallet)
     }

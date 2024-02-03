@@ -50,7 +50,7 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
         }
 
         val rand = random.nextInt(0, 51)
-        if (rand in 27..50) {
+        if (rand in createRange(27, 50)) {
             throw TransactionFailedException(TRANSACTION_FAILED_MESSAGE)
         }
 
@@ -80,6 +80,13 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
         exchange.transactionHistory.add(transaction)
 
         return transaction
+    }
+
+    fun processTransaction(transaction: Transaction): Wallet {
+        return when (transaction) {
+            is TradeTransaction -> transaction.receiver
+            is SwapTransaction -> transaction.initiator
+        }
     }
 
     override fun trade(
@@ -150,4 +157,12 @@ class TradingServiceImpl(val clock: Clock, val random: Random) : TradingService 
     fun <K, V> Map<K, V>.getValueOrThrow(key: K, exceptionSupplier: () -> Throwable)
     : V = this[key] ?: throw exceptionSupplier()
 
+}
+
+fun <A, B> Pair<A, B>.swap(): Pair<B, A> {
+    return second to first
+}
+
+fun createRange(start: Int = 0, end: Int = 10): IntRange {
+    return start..end
 }
