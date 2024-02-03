@@ -5,7 +5,7 @@ import user.User
 import java.math.BigDecimal
 import java.util.*
 
-class Wallet(
+data class Wallet(
     val id: UUID,
     var name: String,
     var isCold: Boolean,
@@ -14,6 +14,13 @@ class Wallet(
 ) {
     val cryptoCurrencies = mutableMapOf<CryptoCurrency, BigDecimal>()
 
+    companion object {
+        fun getDefaultWallet(user: User): Wallet {
+            val defaultWallet = Wallet("Default", "default", user)
+            defaultWallet.cryptoCurrencies[CryptoCurrency("USDT")] = BigDecimal.TEN
+            return defaultWallet
+        }
+    }
     constructor(name: String, passphrase: String, user: User) : this(
         UUID.randomUUID(),
         name,
@@ -22,3 +29,5 @@ class Wallet(
         user
     )
 }
+
+
