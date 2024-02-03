@@ -1,4 +1,6 @@
 import currency.CryptoCurrency
+import transaction.SwapTransaction
+import transaction.TradeTransaction
 import transaction.Transaction
 import user.User
 import user.UserStatus
@@ -18,10 +20,13 @@ fun main(args: Array<String>) {
 fun transactionDestructuring() {
 
     val user = User("user@example.com", "John Doe", UserStatus.BLOCKED)
-    val transaction = Transaction(
-        initiator = Wallet(name = "InitiatorWallet", passphrase = "string", user = user),
+
+    val transaction = SwapTransaction(
+        fromAmount = BigDecimal.ZERO,
         fromCurrency = CryptoCurrency("BTC"),
-        fromAmount = BigDecimal("10.0")
+        toAmount = BigDecimal.ZERO,
+        toCurrency = CryptoCurrency("BTC"),
+        initiator = Wallet(name = "InitiatorWallet", passphrase = "string", user = user),
     )
 
     val (id, date, initiator, fromCurrency, fromAmount) = transaction
